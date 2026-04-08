@@ -215,10 +215,11 @@ body.bg-game {
 
 #score-center {
   font-family: "Bebas Neue", sans-serif;
-  font-size: clamp(20px, 5vw, 90px);
+  font-size: clamp(20px, 4vw, 80px);
   color: var(--red-dark);
   letter-spacing: 0.05em;
   line-height: 1;
+  white-space: nowrap;
 }
 
 .vs-bar {
