@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Admin Control — Safari Vibes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    // 🔧 REPLACE WITH YOUR FIREBASE CONFIG
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+      projectId: "YOUR_PROJECT",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const stateRef = ref(db, "liveEvent");
+
+    let currentState = { mode: "start", teamA: 0, teamB: 0, winner: "" };
+
+    onValue(stateRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        currentState = { ...currentState, ...data };
+        refreshUI();
+      }
+    });
+
+    function setState(updates) {
+      currentState = { ...currentState, ...updates };
+      set(stateRef, currentState)
+        .then(() => showToast("✅ Updated!"))
+        .catch(() => showToast("❌ Error — check Firebase config"));
+    }
+
+    function refreshUI() {
+      const mode = currentState.mode;
+      document.querySelectorAll(".mode-badge").forEach(b => b.classList.remove("active"));
+      const badge = document.querySelector(`[data-mode="${mode}"]`);
+      if (badge) badge.classList.add("active");
+
+      document.getElementById("score-a-val").textContent = (currentState.teamA || 0).toLocaleString();
+      document.getElementById("score-b-val").textContent = (currentState.teamB || 0).toLocaleString();
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 2200);
+    }
+
+    // Bind buttons
+    window.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("btn-start").addEventListener("click", () => setState({ mode: "start" }));
+      document.getElementById("btn-game").addEventListener("click", () => setState({ mode: "game" }));
+      document.getElementById("btn-score").addEventListener("click", () => setState({ mode: "score" }));
+      document.getElementById("btn-winner-a").addEventListener("click", () => setState({ mode: "winner", winner: "MOSES FFC" }));
+      document.getElementById("btn-winner-b").addEventListener("click", () => setState({ mode: "winner", winner: "AHARON FFC" }));
+
+      // Score controls
+      document.getElementById("a-inc").addEventListener("click", () => setState({ teamA: (currentState.teamA || 0) + 1000 }));
+      document.getElementById("a-dec").addEventListener("click", () => setState({ teamA: Math.max(0, (currentState.teamA || 0) - 1000) }));
+      document.getElementById("b-inc").addEventListener("click", () => setState({ teamB: (currentState.teamB || 0) + 1000 }));
+      document.getElementById("b-dec").addEventListener("click", () => setState({ teamB: Math.max(0, (currentState.teamB || 0) - 1000) }));
+      document.getElementById("reset-scores").addEventListener("click", () => setState({ teamA: 0, teamB: 0 }));
+
+      // Custom score inputs
+      document.getElementById("set-scores").addEventListener("click", () => {
+        const a = parseInt(document.getElementById("input-a").value) || 0;
+        const b = parseInt(document.getElementById("input-b").value) || 0;
+        setState({ teamA: a, teamB: b });
+      });
+    });
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red: #C8102E;
+      --red-dark: #8B0C20;
+      --red-light: #E83050;
+      --bg: #0d0d0d;
+      --surface: #1a1a1a;
+      --surface2: #242424;
+      --border: rgba(255,255,255,0.08);
+      --white: #ffffff;
+      --text-muted: rgba(255,255,255,0.45);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--white);
+      min-height: 100vh;
+      padding: 16px;
+      padding-bottom: 40px;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      text-align: center;
+      padding: 20px 0 24px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+
+    .header-eyebrow {
+      font-family: 'Oswald', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.4em;
+      color: var(--red-light);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .header-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 38px;
+      letter-spacing: 0.12em;
+      color: var(--white);
+    }
+
+    .header-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── STATUS BAR ── */
+    .status-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .status-label { font-size: 11px; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; }
+
+    .mode-badge {
+      font-family: 'Oswald', sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.15em;
+      padding: 4px 14px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      background: transparent;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+    }
+
+    .mode-badge.active {
+      background: var(--red);
+      border-color: var(--red);
+      color: var(--white);
+      box-shadow: 0 0 16px rgba(200,16,46,0.4);
+    }
+
+    /* ── SECTION ── */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.35em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── BUTTONS ── */
+    .btn-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .btn-grid.single { grid-template-columns: 1fr; }
+
+    .ctrl-btn {
+      font-family: 'Oswald', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 12px;
+      padding: 16px 10px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .ctrl-btn:active { transform: scale(0.95); }
+
+    .btn-primary {
+      background: var(--red);
+      color: var(--white);
+      box-shadow: 0 4px 20px rgba(200,16,46,0.3);
+    }
+
+    .btn-primary:active { background: var(--red-dark); box-shadow: none; }
+
+    .btn-secondary {
+      background: var(--surface2);
+      color: var(--white);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:active { background: #2e2e2e; }
+
+    .btn-accent {
+      background: linear-gradient(135deg, #1a1a2e, #2d0a18);
+      color: var(--white);
+      border: 1px solid rgba(200,16,46,0.3);
+    }
+
+    .btn-winner {
+      background: linear-gradient(135deg, #C8102E, #ff2250);
+      color: var(--white);
+      box-shadow: 0 4px 24px rgba(200,16,46,0.5);
+      font-size: 16px;
+    }
+
+    /* ── SCORE CONTROLS ── */
+    .score-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .score-team {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .team-label {
+      font-family: 'Oswald', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      color: var(--red-light);
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    .score-display {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 36px;
+      text-align: center;
+      color: var(--white);
+      background: var(--surface2);
+      border-radius: 10px;
+      padding: 10px;
+      border: 1px solid var(--border);
+      letter-spacing: 0.05em;
+    }
+
+    .score-btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .score-btn {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      border: none;
+      border-radius: 10px;
+      padding: 12px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .score-btn:active { transform: scale(0.93); }
+
+    .score-btn.plus { background: var(--red); color: var(--white); }
+    .score-btn.minus { background: var(--surface2); color: var(--white); border: 1px solid var(--border); }
+
+    /* ── CUSTOM INPUT ── */
+    .custom-score {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .score-input {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--white);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px;
+      letter-spacing: 0.05em;
+      padding: 12px;
+      text-align: center;
+      outline: none;
+      width: 100%;
+      transition: border-color 0.2s;
+    }
+
+    .score-input:focus { border-color: var(--red); }
+    .score-input::placeholder { color: var(--text-muted); }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1e1e1e;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 99px;
+      font-size: 13px;
+      letter-spacing: 0.05em;
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      opacity: 0;
+      z-index: 999;
+      white-space: nowrap;
+    }
+
+    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+    /* ── DIVIDER ── */
+    .divider { height: 1px; background: var(--border); margin: 12px 0; }
+
+    .full-width { grid-column: 1 / -1; }
+  </style>
+</head>
+
+<body>
+  <div class="header">
+    <div class="header-eyebrow">🎮 Control Panel</div>
+    <div class="header-title">SAFARI VIBES</div>
+    <div class="header-sub">Live Event Admin</div>
+  </div>
+
+  <!-- Status bar -->
+  <div class="status-bar">
+    <span class="status-label">Current Mode</span>
+    <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
+      <span class="mode-badge active" data-mode="start">Start</span>
+      <span class="mode-badge" data-mode="game">Game</span>
+      <span class="mode-badge" data-mode="score">Score</span>
+      <span class="mode-badge" data-mode="winner">Winner</span>
+    </div>
+  </div>
+
+  <!-- Mode Controls -->
+  <div class="section">
+    <div class="section-title">Mode Controls</div>
+    <div class="btn-grid">
+      <button id="btn-start" class="ctrl-btn btn-secondary">🚀 Start Game</button>
+      <button id="btn-game" class="ctrl-btn btn-accent">⚽ Game Mode</button>
+      <button id="btn-score" class="ctrl-btn btn-primary full-width">📊 Show Score</button>
+    </div>
+  </div>
+
+  <!-- Winner Buttons -->
+  <div class="section">
+    <div class="section-title">🏆 Declare Winner</div>
+    <div class="btn-grid single">
+      <button id="btn-winner-a" class="ctrl-btn btn-winner">🔥 Winner: MOSES FFC</button>
+      <button id="btn-winner-b" class="ctrl-btn btn-winner">🔥 Winner: AHARON FFC</button>
+    </div>
+  </div>
+
+  <!-- Score Controls -->
+  <div class="section">
+    <div class="section-title">Score Controls</div>
+    <div class="score-controls">
+      <!-- Team A -->
+      <div class="score-team">
+        <div class="team-label">Moses FFC</div>
+        <div id="score-a-val" class="score-display">0</div>
+        <div class="score-btn-row">
+          <button id="a-inc" class="score-btn plus">+1K</button>
+          <button id="a-dec" class="score-btn minus">−1K</button>
+        </div>
+      </div>
+      <!-- Team B -->
+      <div class="score-team">
+        <div class="team-label">Aharon FFC</div>
+        <div id="score-b-val" class="score-display">0</div>
+        <div class="score-btn-row">
+          <button id="b-inc" class="score-btn plus">+1K</button>
+          <button id="b-dec" class="score-btn minus">−1K</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Custom Score Input -->
+    <div style="font-family:'Oswald',sans-serif; font-size:11px; letter-spacing:0.3em; color:var(--text-muted); text-transform:uppercase; margin-bottom:10px;">Set Exact Scores</div>
+    <div class="custom-score">
+      <input type="number" id="input-a" class="score-input" placeholder="Moses" />
+      <input type="number" id="input-b" class="score-input" placeholder="Aharon" />
+      <button id="set-scores" class="ctrl-btn btn-primary" style="white-space:nowrap; min-width:60px; padding:12px 16px;">SET</button>
+    </div>
+
+    <div class="divider"></div>
+
+    <button id="reset-scores" class="ctrl-btn btn-secondary" style="width:100%; margin-top:4px;">↺ Reset Scores</button>
+  </div>
+
+  <div id="toast"></div>
+</body>
+</html>
