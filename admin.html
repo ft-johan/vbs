@@ -1,124 +1,202 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>Safari Vibes Admin Console</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/css/admin.css" />
-  <script type="module" src="assets/js/admin.js"></script>
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+    />
+    <title>Safari Vibes Admin Console</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;700&family=Oswald:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/admin.css" />
+    <script type="module" src="assets/js/admin.js"></script>
+  </head>
 
-<body>
-  <main class="app">
-    <section class="topbar">
-      <div class="title-row">
-        <div>
-          <div class="kicker">Live Operator Console</div>
-          <h1 class="title">Safari Vibes</h1>
+  <body>
+    <main class="app">
+      <section class="topbar">
+        <div class="title-row">
+          <div>
+            <div class="kicker">Live Operator Console</div>
+            <h1 class="title">Safari Vibes</h1>
+          </div>
+          <div id="connection-status" class="pill offline">Offline</div>
         </div>
-        <div id="connection-status" class="pill offline">Offline</div>
-      </div>
 
-      <div class="summary-grid">
-        <div class="summary-item">
-          <div class="summary-label">Mode</div>
-          <div id="current-mode" class="summary-value">Start</div>
-        </div>
-        <div class="summary-item">
-          <div class="summary-label">Score</div>
-          <div id="summary-score" class="summary-value">0 - 0</div>
-        </div>
-        <div class="summary-item">
-          <div class="summary-label">Last Sync</div>
-          <div id="last-sync" class="summary-value">-</div>
-        </div>
-      </div>
-    </section>
-
-    <section class="panel">
-      <div class="panel-body">
-        <div>
-          <div class="section-title">1. Mode Flow</div>
-          <div class="mode-grid">
-            <button class="btn active" data-mode-btn="start">Start</button>
-            <button class="btn" data-mode-btn="game">Game</button>
-            <button class="btn" data-mode-btn="score">Score</button>
-            <button class="btn" data-mode-btn="winner">Winner</button>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <div class="summary-label">Mode</div>
+            <div id="current-mode" class="summary-value">Start</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-label">Score</div>
+            <div id="summary-score" class="summary-value">0 - 0</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-label">Last Sync</div>
+            <div id="last-sync" class="summary-value">-</div>
           </div>
         </div>
+      </section>
 
-        <div>
-          <div class="section-title">2. Winner Actions</div>
-          <div class="winner-grid">
-            <button id="winner-a" class="btn" data-winner-btn="MOSES FFC">Set Winner: Moses FFC</button>
-            <button id="winner-b" class="btn" data-winner-btn="AHARON FFC">Set Winner: Aharon FFC</button>
+      <section class="panel">
+        <div class="panel-body">
+          <div>
+            <div class="section-title">1. Mode Flow</div>
+            <div class="mode-grid">
+              <button class="btn active" data-mode-btn="start">Start</button>
+              <button class="btn" data-mode-btn="game">Game</button>
+              <button class="btn" data-mode-btn="score">Score</button>
+              <button class="btn" data-mode-btn="winner">Winner</button>
+            </div>
+          </div>
+
+          <div>
+            <div class="section-title">2. Winner Actions</div>
+            <div class="winner-grid">
+              <button id="winner-a" class="btn" data-winner-btn="MOSES FFC">
+                Set Winner: Moses FFC
+              </button>
+              <button id="winner-b" class="btn" data-winner-btn="AHARON FFC">
+                Set Winner: Aharon FFC
+              </button>
+            </div>
           </div>
         </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-body">
+          <div class="section-title">3. Live Score Control</div>
+          <div class="scores">
+            <article class="team-card">
+              <div class="team-head">
+                <div class="team-name">Moses FFC</div>
+                <div id="team-a-score" class="team-score">0</div>
+              </div>
+              <div class="step-grid">
+                <button
+                  class="step-btn minus"
+                  data-team="teamA"
+                  data-delta="-1000"
+                >
+                  -1k
+                </button>
+                <button
+                  class="step-btn minus"
+                  data-team="teamA"
+                  data-delta="-500"
+                >
+                  -500
+                </button>
+
+                <button
+                  class="step-btn plus"
+                  data-team="teamA"
+                  data-delta="500"
+                >
+                  +500
+                </button>
+                <button
+                  class="step-btn plus"
+                  data-team="teamA"
+                  data-delta="1000"
+                >
+                  +1k
+                </button>
+              </div>
+            </article>
+
+            <article class="team-card">
+              <div class="team-head">
+                <div class="team-name">Aharon FFC</div>
+                <div id="team-b-score" class="team-score">0</div>
+              </div>
+              <div class="step-grid">
+                <button
+                  class="step-btn minus"
+                  data-team="teamB"
+                  data-delta="-1000"
+                >
+                  -1k
+                </button>
+                <button
+                  class="step-btn minus"
+                  data-team="teamB"
+                  data-delta="-500"
+                >
+                  -500
+                </button>
+
+                <button
+                  class="step-btn plus"
+                  data-team="teamB"
+                  data-delta="500"
+                >
+                  +500
+                </button>
+                <button
+                  class="step-btn plus"
+                  data-team="teamB"
+                  data-delta="1000"
+                >
+                  +1k
+                </button>
+              </div>
+            </article>
+          </div>
+
+          <div class="mini-actions">
+            <button id="swap-scores" class="btn">Swap Scores</button>
+            <button class="btn" data-preset="0:0">Preset 0 - 0</button>
+            <button class="btn" data-preset="10000:10000">
+              Preset 10k - 10k
+            </button>
+          </div>
+
+          <div class="preset-grid">
+            <button class="btn" data-preset="5000:0">Moses Lead</button>
+            <button class="btn" data-preset="0:5000">Aharon Lead</button>
+            <button class="btn" data-preset="15000:12000">Final Style</button>
+          </div>
+
+          <div class="exact-grid">
+            <input
+              id="input-a"
+              class="input"
+              type="number"
+              min="0"
+              step="1000"
+              placeholder="Moses score"
+            />
+            <input
+              id="input-b"
+              class="input"
+              type="number"
+              min="0"
+              step="1000"
+              placeholder="Aharon score"
+            />
+            <button id="set-exact" class="btn btn-primary">Set Exact</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <section class="sticky-cta">
+      <div class="cta-grid">
+        <button id="show-score-now" class="btn btn-primary">
+          Push Score To Display
+        </button>
+        <button id="reset-scores" class="btn btn-danger">Reset Scores</button>
       </div>
     </section>
 
-    <section class="panel">
-      <div class="panel-body">
-        <div class="section-title">3. Live Score Control</div>
-        <div class="scores">
-          <article class="team-card">
-            <div class="team-head">
-              <div class="team-name">Moses FFC</div>
-              <div id="team-a-score" class="team-score">0</div>
-            </div>
-            <div class="step-grid">
-              <button class="step-btn minus" data-team="teamA" data-delta="-500">-500</button>
-              <button class="step-btn minus" data-team="teamA" data-delta="-1000">-1k</button>
-              <button class="step-btn plus" data-team="teamA" data-delta="500">+500</button>
-              <button class="step-btn plus" data-team="teamA" data-delta="1000">+1k</button>
-            </div>
-          </article>
-
-          <article class="team-card">
-            <div class="team-head">
-              <div class="team-name">Aharon FFC</div>
-              <div id="team-b-score" class="team-score">0</div>
-            </div>
-            <div class="step-grid">
-              <button class="step-btn minus" data-team="teamB" data-delta="-500">-500</button>
-              <button class="step-btn minus" data-team="teamB" data-delta="-1000">-1k</button>
-              <button class="step-btn plus" data-team="teamB" data-delta="500">+500</button>
-              <button class="step-btn plus" data-team="teamB" data-delta="1000">+1k</button>
-            </div>
-          </article>
-        </div>
-
-        <div class="mini-actions">
-          <button id="swap-scores" class="btn">Swap Scores</button>
-          <button class="btn" data-preset="0:0">Preset 0 - 0</button>
-          <button class="btn" data-preset="10000:10000">Preset 10k - 10k</button>
-        </div>
-
-        <div class="preset-grid">
-          <button class="btn" data-preset="5000:0">Moses Lead</button>
-          <button class="btn" data-preset="0:5000">Aharon Lead</button>
-          <button class="btn" data-preset="15000:12000">Final Style</button>
-        </div>
-
-        <div class="exact-grid">
-          <input id="input-a" class="input" type="number" min="0" step="1000" placeholder="Moses score" />
-          <input id="input-b" class="input" type="number" min="0" step="1000" placeholder="Aharon score" />
-          <button id="set-exact" class="btn btn-primary">Set Exact</button>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <section class="sticky-cta">
-    <div class="cta-grid">
-      <button id="show-score-now" class="btn btn-primary">Push Score To Display</button>
-      <button id="reset-scores" class="btn btn-danger">Reset Scores</button>
-    </div>
-  </section>
-
-  <div id="toast" role="status" aria-live="polite"></div>
-</body>
+    <div id="toast" role="status" aria-live="polite"></div>
+  </body>
 </html>
